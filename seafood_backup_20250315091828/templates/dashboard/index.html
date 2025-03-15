@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard | Sistema de Gestión de Mariscos{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Panel de Control</h2>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="card text-white bg-primary">
+                    <div class="card-body">
+                        <h5 class="card-title">Inventario</h5>
+                        <p class="card-text">Administra los productos</p>
+                        <a href="{% url 'inventario' %}" class="btn btn-light">Ver inventario</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card text-white bg-success">
+                    <div class="card-body">
+                        <h5 class="card-title">Pedidos</h5>
+                        <p class="card-text">Gestiona los pedidos</p>
+                        <a href="{% url 'pedidos' %}" class="btn btn-light">Ver pedidos</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card text-white bg-info">
+                    <div class="card-body">
+                        <h5 class="card-title">Clientes</h5>
+                        <p class="card-text">Administra los clientes</p>
+                        <a href="{% url 'clientes' %}" class="btn btn-light">Ver clientes</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

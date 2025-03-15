@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sistema de Mariscos{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --sidebar-width: 280px;
+        }
+        .sidebar {
+            width: var(--sidebar-width);
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            padding: 48px 0 0;
+            box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+            background: linear-gradient(180deg, #1a237e 0%, #0d47a1 100%);
+        }
+        .main-content {
+            margin-left: var(--sidebar-width);
+        }
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, .8);
+            padding: 1rem 1.5rem;
+            font-size: 1.1rem;
+        }
+        .sidebar .nav-link:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, .1);
+        }
+        .sidebar .nav-link.active {
+            color: #fff;
+            background: rgba(255, 255, 255, .2);
+        }
+        .sidebar .nav-link i {
+            margin-right: 10px;
+        }
+        .navbar {
+            margin-left: var(--sidebar-width);
+            height: 48px;
+            box-shadow: 0 2px 4px rgba(0,0,0,.1);
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,.1);
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-card {
+            background: linear-gradient(45deg, #2196f3, #1976d2);
+            color: white;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                margin-left: -280px;
+            }
+            .sidebar.show {
+                margin-left: 0;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .navbar {
+                margin-left: 0;
+            }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="text-center mb-4">
+            <h4 class="text-white">Sistema de Mariscos</h4>
+        </div>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" 
+                   href="{% url 'dashboard' %}">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'inventario' %}active{% endif %}" 
+                   href="{% url 'inventario' %}">
+                    <i class="bi bi-box-seam"></i> Inventario
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'pedidos' %}active{% endif %}" 
+                   href="{% url 'pedidos' %}">
+                    <i class="bi bi-cart3"></i> Pedidos
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'clientes' %}active{% endif %}" 
+                   href="{% url 'clientes' %}">
+                    <i class="bi bi-people"></i> Clientes
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'proveedores' %}active{% endif %}" 
+                   href="{% url 'proveedores' %}">
+                    <i class="bi bi-truck"></i> Proveedores
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'informes' %}active{% endif %}" 
+                   href="{% url 'informes' %}">
+                    <i class="bi bi-graph-up"></i> Informes
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Top navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white">
+        <div class="container-fluid">
+            <button class="navbar-toggler d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="ms-auto">
+                {% if user.is_authenticated %}
+                <div class="dropdown">
+                    <button class="btn btn-link dropdown-toggle text-decoration-none" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i> {{ user.username }}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="{% url 'admin:index' %}"><i class="bi bi-gear"></i> Admin</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a></li>
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="main-content p-4">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        {% block content %}{% endblock %}
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
