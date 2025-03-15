@@ -34,7 +34,7 @@ def producto_crear(request):
             nombre=nombre,
             descripcion=descripcion,
             precio=precio,
-            stock=stock,
+            cantidad_stock=stock,
             imagen=imagen
         )
         messages.success(request, 'Producto creado exitosamente.')
@@ -50,7 +50,7 @@ def producto_editar(request, pk):
         producto.nombre = request.POST.get('nombre')
         producto.descripcion = request.POST.get('descripcion')
         producto.precio = request.POST.get('precio')
-        producto.stock = request.POST.get('stock')
+        producto.cantidad_stock = request.POST.get('stock')
         
         if 'imagen' in request.FILES:
             producto.imagen = request.FILES['imagen']
@@ -85,16 +85,16 @@ def ajustar_stock(request, pk):
         operacion = request.POST.get('operacion')
         
         if operacion == 'sumar':
-            producto.stock += cantidad
+            producto.cantidad_stock += cantidad
         elif operacion == 'restar':
-            if producto.stock >= cantidad:
-                producto.stock -= cantidad
+            if producto.cantidad_stock >= cantidad:
+                producto.cantidad_stock -= cantidad
             else:
                 messages.error(request, 'No hay suficiente stock para realizar esta operación.')
                 return redirect('inventario')
                 
         producto.save()
-        messages.success(request, f'Stock actualizado exitosamente. Nuevo stock: {producto.stock}')
+        messages.success(request, f'Stock actualizado exitosamente. Nuevo stock: {producto.cantidad_stock}')
         return redirect('inventario')
         
     return render(request, 'inventario/ajustar_stock.html', {'producto': producto})

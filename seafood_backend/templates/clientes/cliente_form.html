@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}{{ action }} Cliente{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2>{{ action }} Cliente</h2>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" 
+                                   value="{{ cliente.nombre|default:'' }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="rut" class="form-label">RUT</label>
+                            <input type="text" class="form-control" id="rut" name="rut" 
+                                   value="{{ cliente.rut|default:'' }}" required
+                                   {% if action == 'Editar' %}readonly{% endif %}>
+                            <div class="form-text">Formato: 12345678-9</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   value="{{ cliente.email|default:'' }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="telefono" class="form-label">Teléfono</label>
+                            <input type="tel" class="form-control" id="telefono" name="telefono" 
+                                   value="{{ cliente.telefono|default:'' }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="direccion" class="form-label">Dirección</label>
+                            <textarea class="form-control" id="direccion" name="direccion" 
+                                    rows="3" required>{{ cliente.direccion|default:'' }}</textarea>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> Guardar
+                            </button>
+                            <a href="{% url 'clientes' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // RUT validation and formatting
+    const rutInput = document.getElementById('rut');
+    if (rutInput) {
+        rutInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\./g, '').replace('-', '');
+            if (value.length > 1) {
+                value = value.slice(0, -1) + '-' + value.slice(-1);
+            }
+            e.target.value = value;
+        });
+    }
+});
+</script>
+{% endblock %}

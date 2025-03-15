@@ -56,7 +56,7 @@ def pedido_crear(request):
                 for producto_id, cantidad in zip(productos, cantidades):
                     if cantidad and int(cantidad) > 0:
                         producto = Producto.objects.get(id=producto_id)
-                        if producto.stock < int(cantidad):
+                        if producto.cantidad_stock < int(cantidad):
                             raise ValueError(f'Stock insuficiente para {producto.nombre}')
                         
                         # Crear detalle del pedido
@@ -68,7 +68,7 @@ def pedido_crear(request):
                         )
                         
                         # Actualizar stock
-                        producto.stock -= int(cantidad)
+                        producto.cantidad_stock -= int(cantidad)
                         producto.save()
                 
                 pedido.actualizar_total()
@@ -84,7 +84,7 @@ def pedido_crear(request):
     
     context = {
         'clientes': Cliente.objects.filter(activo=True),
-        'productos': Producto.objects.filter(activo=True, stock__gt=0)
+        'productos': Producto.objects.filter(activo=True, cantidad_stock__gt=0)
     }
     return render(request, 'pedidos/pedido_form.html', context)
 
@@ -117,7 +117,7 @@ def pedido_cancelar(request, pk):
                     # Devolver productos al inventario
                     for detalle in pedido.detalles.all():
                         producto = detalle.producto
-                        producto.stock += detalle.cantidad
+                        producto.cantidad_stock += detalle.cantidad
                         producto.save()
                     
                     pedido.estado = 'cancelado'

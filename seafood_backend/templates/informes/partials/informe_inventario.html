@@ -1,0 +1,54 @@
+{% load humanize %}
+
+<div class="informe-contenido">
+    <div class="row">
+        <div class="col-md-6">
+            <p><strong>Total Productos:</strong> {{ datos.total_productos }}</p>
+            <p><strong>Valor Total Inventario:</strong> ${{ datos.valor_total_inventario|floatformat:0|intcomma }}</p>
+        </div>
+    </div>
+
+    {% if datos.productos_sin_stock %}
+    <h6 class="mt-3">Productos sin stock:</h6>
+    <div class="table-responsive">
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Precio</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for producto in datos.productos_sin_stock %}
+                <tr>
+                    <td>{{ producto.nombre }}</td>
+                    <td>${{ producto.precio|floatformat:0|intcomma }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    {% if datos.productos_stock_bajo %}
+    <h6 class="mt-3">Productos con stock bajo:</h6>
+    <div class="table-responsive">
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Stock</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for producto in datos.productos_stock_bajo %}
+                <tr>
+                    <td>{{ producto.nombre }}</td>
+                    <td>{{ producto.stock }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</div>

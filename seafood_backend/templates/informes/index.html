@@ -1,12 +1,49 @@
 {% extends "base.html" %}
 
-{% block title %}informes{% endblock %}
+{% block title %}{{ titulo }}{% endblock %}
 
 {% block content %}
-<h1>informes</h1>
-<div class="card">
-    <div class="card-body">
-        <p>Bienvenido al módulo de informes.</p>
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>{{ titulo }}</h1>
+        <a href="{% url 'generar_informe' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Generar Nuevo Informe
+        </a>
     </div>
+
+    {% if informes %}
+        <div class="row">
+            {% for informe in informes %}
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">{{ informe.titulo }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            <strong>Tipo:</strong> {{ informe.get_tipo_display }}<br>
+                            <strong>Fecha:</strong> {{ informe.fecha_creacion|date:"d/m/Y H:i" }}<br>
+                            <strong>Creado por:</strong> {{ informe.creado_por.get_full_name|default:informe.creado_por.username }}
+                        </p>
+                        
+                        {% if informe.tipo == 'ventas' %}
+                            {% include "informes/partials/informe_ventas.html" with datos=informe.contenido %}
+                        {% elif informe.tipo == 'inventario' %}
+                            {% include "informes/partials/informe_inventario.html" with datos=informe.contenido %}
+                        {% elif informe.tipo == 'clientes' %}
+                            {% include "informes/partials/informe_clientes.html" with datos=informe.contenido %}
+                        {% elif informe.tipo == 'proveedores' %}
+                            {% include "informes/partials/informe_proveedores.html" with datos=informe.contenido %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            No hay informes generados. Utiliza el botón "Generar Nuevo Informe" para crear uno.
+        </div>
+    {% endif %}
 </div>
 {% endblock %}

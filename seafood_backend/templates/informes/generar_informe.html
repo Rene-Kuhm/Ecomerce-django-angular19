@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Generar Informe{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Generar Nuevo Informe</h1>
+    
+    <div class="card">
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="titulo" class="form-label">Título del Informe</label>
+                    <input type="text" class="form-control" id="titulo" name="titulo" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="tipo" class="form-label">Tipo de Informe</label>
+                    <select class="form-select" id="tipo" name="tipo" required>
+                        <option value="">Seleccione un tipo...</option>
+                        <option value="ventas">Informe de Ventas</option>
+                        <option value="inventario">Informe de Inventario</option>
+                        <option value="clientes">Informe de Clientes</option>
+                        <option value="proveedores">Informe de Proveedores</option>
+                    </select>
+                </div>
+                
+                <div class="text-end">
+                    <a href="{% url 'informes' %}" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">Generar Informe</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

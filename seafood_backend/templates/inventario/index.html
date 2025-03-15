@@ -44,8 +44,8 @@
                     <p class="card-text">
                         <strong>Precio:</strong> ${{ producto.precio }}<br>
                         <strong>Stock:</strong> 
-                        <span class="{% if producto.stock_bajo %}text-danger{% endif %}">
-                            {{ producto.stock }} unidades
+                        <span class="{% if producto.cantidad_stock < 10 %}text-danger{% endif %}">
+                            {{ producto.cantidad_stock }} {{ producto.unidad }}
                         </span>
                     </p>
                 </div>

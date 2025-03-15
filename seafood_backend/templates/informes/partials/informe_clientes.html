@@ -1,0 +1,35 @@
+{% load humanize %}
+
+<div class="informe-contenido">
+    <div class="row">
+        <div class="col-md-6">
+            <p><strong>Total Clientes:</strong> {{ datos.total_clientes }}</p>
+            <p><strong>Clientes Activos:</strong> {{ datos.clientes_activos }}</p>
+            <p><strong>Clientes Inactivos:</strong> {{ datos.clientes_inactivos }}</p>
+        </div>
+    </div>
+
+    {% if datos.mejores_clientes %}
+    <h6 class="mt-3">Mejores Clientes:</h6>
+    <div class="table-responsive">
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>Total Pedidos</th>
+                    <th>Total Gastado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cliente in datos.mejores_clientes %}
+                <tr>
+                    <td>{{ cliente.cliente__nombre }}</td>
+                    <td>{{ cliente.total_pedidos }}</td>
+                    <td>${{ cliente.total_gastado|floatformat:0|intcomma }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</div>

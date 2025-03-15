@@ -1,0 +1,17 @@
+{
+  // ...existing code...
+  "projects": {
+    "seafood-frontend": {
+      // ...existing code...
+      "architect": {
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "proxyConfig": "proxy.conf.json",
+            // ...existing code...
+          }
+        }
+      }
+    }
+  }
+}

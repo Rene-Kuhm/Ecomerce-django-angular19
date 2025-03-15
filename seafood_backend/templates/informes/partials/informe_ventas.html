@@ -1,0 +1,33 @@
+{% load humanize %}
+
+<div class="informe-contenido">
+    <div class="row">
+        <div class="col-md-6">
+            <p><strong>Total Pedidos:</strong> {{ datos.total_pedidos }}</p>
+            <p><strong>Total Ventas:</strong> ${{ datos.total_ventas|floatformat:0|intcomma }}</p>
+            <p><strong>Promedio por Venta:</strong> ${{ datos.promedio_venta|floatformat:0|intcomma }}</p>
+        </div>
+    </div>
+
+    {% if datos.productos_mas_vendidos %}
+    <h6 class="mt-3">Productos más vendidos:</h6>
+    <div class="table-responsive">
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for producto in datos.productos_mas_vendidos %}
+                <tr>
+                    <td>{{ producto.producto__nombre }}</td>
+                    <td>{{ producto.total }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</div>

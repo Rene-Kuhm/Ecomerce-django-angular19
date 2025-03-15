@@ -1,19 +1,33 @@
 asgiref==3.8.1
-crispy-bootstrap4==2024.10
+crispy-bootstrap4>=2022.1
 diff-match-patch==20241021
-dj-database-url==2.3.0
-Django==5.1.7
-django-cors-headers==4.7.0
-django-crispy-forms==2.3
-django-filter==25.1
-django-import-export==4.3.7
-django-simple-history==3.8.0
-djangorestframework==3.15.2
-gunicorn==23.0.0
+dj-database-url>=0.5.0
+Django>=3.2,<4.0
+django-cors-headers>=3.10.0
+django-crispy-forms>=1.14.0
+django-filter>=21.1
+django-import-export>=3.0.0
+django-simple-history>=3.0.0
+djangorestframework>=3.12.0
+gunicorn>=20.1.0
 packaging==24.2
-pillow==11.1.0
-python-decouple==3.8
+Pillow>=9.0.0
+python-decouple>=3.6
 sqlparse==0.5.3
 tablib==3.8.0
 typing_extensions==4.12.2
-whitenoise==6.9.0
+whitenoise>=6.0.0
+pyotp>=2.6.0  # Para autenticación de dos factores
+drf-yasg>=1.20.0  # Para documentación Swagger/OpenAPI
+django-celery-beat>=2.2.1  # Para tareas programadas
+django-celery-results>=2.2.0
+redis>=4.0.0  # Para caché y tareas en segundo plano
+psycopg2-binary>=2.9.0  # Para PostgreSQL en producción
+python-json-logger>=2.0.0  # Para logging en JSON
+django-storages>=1.12.0  # Para almacenamiento en la nube
+boto3>=1.26.0  # Para AWS S3
+numpy>=1.21.0  # Para cálculos estadísticos
+pandas>=1.3.0  # Para análisis de datos
+scikit-learn>=1.0.0  # Para predicciones
+matplotlib>=3.4.0  # Para gráficos
+seaborn>=0.11.0  # Para visualización de datos

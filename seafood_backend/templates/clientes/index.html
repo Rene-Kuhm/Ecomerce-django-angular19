@@ -1,12 +1,110 @@
 {% extends "base.html" %}
 
-{% block title %}clientes{% endblock %}
+{% block title %}Clientes{% endblock %}
 
 {% block content %}
-<h1>clientes</h1>
-<div class="card">
-    <div class="card-body">
-        <p>Bienvenido al módulo de clientes.</p>
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Clientes</h1>
+        <a href="{% url 'cliente_crear' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nuevo Cliente
+        </a>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-8">
+                    <input type="text" name="search" class="form-control" 
+                           placeholder="Buscar por nombre, RUT o email..." 
+                           value="{{ search_query }}">
+                </div>
+                <div class="col-md-2">
+                    <select name="estado" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="activo" {% if estado_filter == 'activo' %}selected{% endif %}>Activos</option>
+                        <option value="inactivo" {% if estado_filter == 'inactivo' %}selected{% endif %}>Inactivos</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>RUT</th>
+                        <th>Email</th>
+                        <th>Teléfono</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cliente in clientes %}
+                    <tr>
+                        <td>{{ cliente.nombre }}</td>
+                        <td>{{ cliente.rut }}</td>
+                        <td>{{ cliente.email }}</td>
+                        <td>{{ cliente.telefono }}</td>
+                        <td>
+                            <span class="badge {% if cliente.activo %}bg-success{% else %}bg-danger{% endif %}">
+                                {{ cliente.activo|yesno:"Activo,Inactivo" }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{% url 'cliente_editar' cliente.pk %}" 
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-pencil"></i> Editar
+                                </a>
+                                {% if cliente.activo %}
+                                <a href="{% url 'cliente_eliminar' cliente.pk %}" 
+                                   class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-person-x"></i> Desactivar
+                                </a>
+                                {% else %}
+                                <form method="POST" action="{% url 'cliente_activar' cliente.pk %}" 
+                                      style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-success">
+                                        <i class="bi bi-person-check"></i> Activar
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4">
+                            No se encontraron clientes
+                            {% if search_query or estado_filter %}
+                            con los filtros seleccionados
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 {% endblock %}

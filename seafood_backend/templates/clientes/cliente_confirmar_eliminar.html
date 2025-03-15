@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Desactivar Cliente{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Desactivar Cliente</h2>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning mb-4">
+                        <h4 class="alert-heading">¡Atención!</h4>
+                        <p>¿Está seguro que desea desactivar al cliente "{{ cliente.nombre }}"?</p>
+                        <hr>
+                        <p class="mb-0">
+                            El cliente no será eliminado permanentemente, solo será desactivado y podrá ser 
+                            reactivado más tarde si es necesario.
+                        </p>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Detalles del cliente</h5>
+                            <dl class="row mb-0">
+                                <dt class="col-sm-3">Nombre:</dt>
+                                <dd class="col-sm-9">{{ cliente.nombre }}</dd>
+                                
+                                <dt class="col-sm-3">RUT:</dt>
+                                <dd class="col-sm-9">{{ cliente.rut }}</dd>
+                                
+                                <dt class="col-sm-3">Email:</dt>
+                                <dd class="col-sm-9">{{ cliente.email }}</dd>
+                                
+                                <dt class="col-sm-3">Teléfono:</dt>
+                                <dd class="col-sm-9">{{ cliente.telefono }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                    
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-person-x"></i> Sí, Desactivar Cliente
+                            </button>
+                            <a href="{% url 'clientes' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
