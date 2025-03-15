@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Pedido #{{ pedido.id }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h2 class="mb-0">Pedido #{{ pedido.id }}</h2>
+                    <span class="badge {% if pedido.estado == 'pendiente' %}bg-warning
+                               {% elif pedido.estado == 'en_proceso' %}bg-info
+                               {% elif pedido.estado == 'completado' %}bg-success
+                               {% else %}bg-danger{% endif %} fs-6">
+                        {{ pedido.get_estado_display }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-sm-6">
+                            <h6 class="mb-3">Cliente:</h6>
+                            <div><strong>{{ pedido.cliente.nombre }}</strong></div>
+                            <div>RUT: {{ pedido.cliente.rut }}</div>
+                            <div>Email: {{ pedido.cliente.email }}</div>
+                            <div>Teléfono: {{ pedido.cliente.telefono }}</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <h6 class="mb-3">Detalles del Pedido:</h6>
+                            <div>Fecha: {{ pedido.fecha_pedido|date:"d/m/Y H:i" }}</div>
+                            <div>Última actualización: {{ pedido.fecha_actualizacion|date:"d/m/Y H:i" }}</div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive mb-4">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th class="text-center">Cantidad</th>
+                                    <th class="text-end">Precio Unitario</th>
+                                    <th class="text-end">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for detalle in pedido.detalles.all %}
+                                <tr>
+                                    <td>{{ detalle.producto.nombre }}</td>
+                                    <td class="text-center">{{ detalle.cantidad }}</td>
+                                    <td class="text-end">${{ detalle.precio_unitario }}</td>
+                                    <td class="text-end">${{ detalle.subtotal }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                    <td class="text-end"><strong>${{ pedido.total }}</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    {% if pedido.notas %}
+                    <div class="mb-4">
+                        <h6>Notas:</h6>
+                        <p class="mb-0">{{ pedido.notas }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <a href="{% url 'pedidos' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver a Pedidos
+                </a>
+                {% if pedido.estado != 'cancelado' %}
+                <form method="POST" action="{% url 'pedido_cancelar' pedido.pk %}" 
+                      onsubmit="return confirm('¿Está seguro que desea cancelar este pedido?');"
+                      class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-x-circle"></i> Cancelar Pedido
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            {% if pedido.estado != 'cancelado' %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Actualizar Estado</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{% url 'pedido_estado' pedido.pk %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="estado" class="form-label">Nuevo Estado</label>
+                            <select name="estado" id="estado" class="form-select">
+                                {% for estado_value, estado_label in pedido.ESTADO_CHOICES %}
+                                {% if estado_value != 'cancelado' %}
+                                <option value="{{ estado_value }}" 
+                                        {% if estado_value == pedido.estado %}selected{% endif %}>
+                                    {{ estado_label }}
+                                </option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-check-circle"></i> Actualizar Estado
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

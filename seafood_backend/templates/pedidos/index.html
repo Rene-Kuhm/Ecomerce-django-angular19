@@ -1,12 +1,100 @@
 {% extends "base.html" %}
 
-{% block title %}pedidos{% endblock %}
+{% block title %}Pedidos{% endblock %}
 
 {% block content %}
-<h1>pedidos</h1>
-<div class="card">
-    <div class="card-body">
-        <p>Bienvenido al módulo de pedidos.</p>
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Pedidos</h1>
+        <a href="{% url 'pedido_crear' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nuevo Pedido
+        </a>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-6">
+                    <input type="text" name="search" class="form-control" 
+                           placeholder="Buscar por cliente o número de pedido..." 
+                           value="{{ search_query }}">
+                </div>
+                <div class="col-md-4">
+                    <select name="estado" class="form-select">
+                        <option value="">Todos los estados</option>
+                        {% for estado_value, estado_label in estados %}
+                        <option value="{{ estado_value }}" {% if estado_value == estado_filter %}selected{% endif %}>
+                            {{ estado_label }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>N° Pedido</th>
+                        <th>Cliente</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Total</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pedido in pedidos %}
+                    <tr>
+                        <td>#{{ pedido.id }}</td>
+                        <td>{{ pedido.cliente.nombre }}</td>
+                        <td>{{ pedido.fecha_pedido|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            <span class="badge {% if pedido.estado == 'pendiente' %}bg-warning
+                                       {% elif pedido.estado == 'en_proceso' %}bg-info
+                                       {% elif pedido.estado == 'completado' %}bg-success
+                                       {% else %}bg-danger{% endif %}">
+                                {{ pedido.get_estado_display }}
+                            </span>
+                        </td>
+                        <td>${{ pedido.total }}</td>
+                        <td>
+                            <a href="{% url 'pedido_detalle' pedido.pk %}" 
+                               class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-eye"></i> Ver
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4">
+                            No se encontraron pedidos
+                            {% if search_query or estado_filter %}
+                            con los filtros seleccionados
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 {% endblock %}

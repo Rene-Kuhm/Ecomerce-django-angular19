@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}Crear Pedido{% endblock %}
+
+{% block extra_css %}
+<style>
+    .producto-row {
+        position: relative;
+    }
+    .remove-row {
+        position: absolute;
+        right: -40px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Crear Nuevo Pedido</h2>
+                </div>
+                <div class="card-body">
+                    <form method="POST" id="pedidoForm">
+                        {% csrf_token %}
+                        
+                        <!-- Cliente -->
+                        <div class="mb-4">
+                            <label for="cliente" class="form-label">Cliente</label>
+                            <select name="cliente" id="cliente" class="form-select" required>
+                                <option value="">Seleccione un cliente</option>
+                                {% for cliente in clientes %}
+                                <option value="{{ cliente.id }}">{{ cliente.nombre }} - {{ cliente.rut }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <!-- Productos -->
+                        <div class="mb-4">
+                            <label class="form-label">Productos</label>
+                            <div id="productosContainer">
+                                <div class="producto-row row mb-3">
+                                    <div class="col-md-6">
+                                        <select name="producto" class="form-select producto-select" required>
+                                            <option value="">Seleccione un producto</option>
+                                            {% for producto in productos %}
+                                            <option value="{{ producto.id }}" 
+                                                    data-precio="{{ producto.precio }}"
+                                                    data-stock="{{ producto.stock }}">
+                                                {{ producto.nombre }} - ${{ producto.precio }} ({{ producto.stock }} disponibles)
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="number" name="cantidad" class="form-control cantidad-input" 
+                                               min="1" placeholder="Cantidad" required>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="text" class="form-control subtotal" readonly>
+                                    </div>
+                                    <button type="button" class="btn btn-danger btn-sm remove-row" style="display:none;">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <button type="button" id="agregarProducto" class="btn btn-outline-primary">
+                                <i class="bi bi-plus-circle"></i> Agregar Producto
+                            </button>
+                        </div>
+                        
+                        <!-- Total -->
+                        <div class="mb-4">
+                            <div class="row">
+                                <div class="col-md-9 text-end">
+                                    <strong>Total:</strong>
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="text" id="totalPedido" class="form-control" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Notas -->
+                        <div class="mb-4">
+                            <label for="notas" class="form-label">Notas adicionales</label>
+                            <textarea name="notas" id="notas" class="form-control" rows="3"></textarea>
+                        </div>
+                        
+                        <!-- Botones -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Crear Pedido
+                            </button>
+                            <a href="{% url 'pedidos' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const productosContainer = document.getElementById('productosContainer');
+    const agregarProductoBtn = document.getElementById('agregarProducto');
+    
+    function actualizarSubtotal(row) {
+        const selectProducto = row.querySelector('.producto-select');
+        const inputCantidad = row.querySelector('.cantidad-input');
+        const inputSubtotal = row.querySelector('.subtotal');
+        
+        if (selectProducto.value && inputCantidad.value) {
+            const precio = parseFloat(selectProducto.selectedOptions[0].dataset.precio);
+            const cantidad = parseInt(inputCantidad.value);
+            const subtotal = precio * cantidad;
+            inputSubtotal.value = `$${subtotal.toFixed(2)}`;
+        } else {
+            inputSubtotal.value = '';
+        }
+        
+        actualizarTotal();
+    }
+    
+    function actualizarTotal() {
+        let total = 0;
+        document.querySelectorAll('.producto-row').forEach(row => {
+            const subtotalStr = row.querySelector('.subtotal').value;
+            if (subtotalStr) {
+                total += parseFloat(subtotalStr.replace('$', ''));
+            }
+        });
+        document.getElementById('totalPedido').value = `$${total.toFixed(2)}`;
+    }
+    
+    function agregarFilaProducto() {
+        const primeraFila = productosContainer.querySelector('.producto-row');
+        const nuevaFila = primeraFila.cloneNode(true);
+        
+        nuevaFila.querySelectorAll('input').forEach(input => input.value = '');
+        nuevaFila.querySelector('.remove-row').style.display = 'block';
+        
+        nuevaFila.querySelector('.producto-select').addEventListener('change', () => actualizarSubtotal(nuevaFila));
+        nuevaFila.querySelector('.cantidad-input').addEventListener('input', () => actualizarSubtotal(nuevaFila));
+        nuevaFila.querySelector('.remove-row').addEventListener('click', () => {
+            nuevaFila.remove();
+            actualizarTotal();
+        });
+        
+        productosContainer.appendChild(nuevaFila);
+    }
+    
+    // Eventos iniciales
+    const primeraFila = productosContainer.querySelector('.producto-row');
+    primeraFila.querySelector('.producto-select').addEventListener('change', () => actualizarSubtotal(primeraFila));
+    primeraFila.querySelector('.cantidad-input').addEventListener('input', () => actualizarSubtotal(primeraFila));
+    
+    agregarProductoBtn.addEventListener('click', agregarFilaProducto);
+    
+    // Validación de stock
+    document.getElementById('pedidoForm').addEventListener('submit', function(e) {
+        let valid = true;
+        document.querySelectorAll('.producto-row').forEach(row => {
+            const select = row.querySelector('.producto-select');
+            const cantidad = parseInt(row.querySelector('.cantidad-input').value);
+            if (select.value && cantidad) {
+                const stock = parseInt(select.selectedOptions[0].dataset.stock);
+                if (cantidad > stock) {
+                    alert(`Stock insuficiente para ${select.selectedOptions[0].text}`);
+                    valid = false;
+                }
+            }
+        });
+        if (!valid) {
+            e.preventDefault();
+        }
+    });
+});
+</script>
+{% endblock %}
